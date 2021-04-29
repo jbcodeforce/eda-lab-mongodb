@@ -10,6 +10,6 @@
       "key.converter.schemas.enable": false,
       "value.converter.schemas.enable": false,
       "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-      "camel.sink.path.connectionBean": "mongodb:com.mongodb.client.MongoClients#create(mongo:27017)?database=itemdb&collection=items&operation=insert"
+      "camel.sink.path.connectionBean": "mongodb:mongoBean?database=itemdb&collection=items&operation=insert"
   }
 }
