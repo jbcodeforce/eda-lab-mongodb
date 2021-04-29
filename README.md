@@ -8,14 +8,18 @@ Developers and architects who want to learn how to use Kafka Connect with a mong
 
 ## What you will learn
 
-* [Lab1](): is running locally a Kafka broker 2.7 (Strimzi image), zookeeper, Mongodb and Kafka Connect. A simulator app helps to send messages to Kafka. This solution use [Apache Camel Kafka connector](https://camel.apache.org/camel-kafka-connector/latest/). 
-* Lab2: 
+* [Lab1](#lab-1-run-locally-with-docker): is running locally a Kafka broker 2.7 (Strimzi image), zookeeper, Mongodb and Kafka Connect. A simulator app helps to send messages to Kafka. This solution use [Apache Camel Kafka connector](https://camel.apache.org/camel-kafka-connector/latest/). 
+* [Lab2](#lab-2-using-mongodb-connector-on-openshift): is about running Kafka Connect on OpenShift with the Simulator app, and using the IBM Event Streams manager service on the Cloud.
 
-The following figure illustrates the components involved:
+The following figure illustrates a the components involved with a potential production deployment with a Mongodb as a service on a cloud provider like IBM Cloud, and Kafka, application and Kafka Connect cluster deployed on OpenShift.
 
 ![](./docs/components.png)
 
 ## Lab 1: Run locally with docker
+
+For development purpose and quick demonstration we can use docker and docker compose, in this case, the deployment looks like in the following figure:
+
+![](./docs/lab1-context.png)
 
 ### Pre-requisites
 
@@ -114,10 +118,21 @@ docker build -t quay.io/ibmcase/camel-mongo-kconnector .
 
 ## Lab 2: Using Mongodb connector on OpenShift
 
-### Prerequisite
+The lab 2 context is little bit different as the Kafka Connect cluster is running on OpenShift using the Strimzi Operator, and thee Kafka is the IBM Event Streams managed service running on IBM Cloud.
+
+![](./docs/lab2-context.png)
+
+### Pre-requisites
+
+You need the following:
+
+* [git](https://git-scm.com/)
+* [jq](https://stedolan.github.io/jq/)
+* [OpenShift oc CLI](https://docs.openshift.com/container-platform/4.5/cli_reference/openshift_cli/getting-started-cli.html)
 
 ### Prepare the MongoDB Sink Connector
 
+The Confluent verified connector is coming from the [Mongodb team](https://docs.mongodb.com/kafka-connector/current/).
 
 ## Related information
 
