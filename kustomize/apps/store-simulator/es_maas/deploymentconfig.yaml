@@ -1,0 +1,71 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    app.openshift.io/vcs-url: https://github.com/ibm-cloud-architecture/refarch-eda-store-simulator.git
+  labels:
+    app.kubernetes.io/name: store-simulator
+    app.openshift.io/runtime: quarkus
+  name: store-simulator
+spec:
+  replicas: 1
+  selector:
+    app.kubernetes.io/name: store-simulator
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/vcs-url: https://github.com/ibm-cloud-architecture/refarch-eda-store-simulator.git
+      labels:
+        app.kubernetes.io/name: store-simulator
+        app.openshift.io/runtime: quarkus
+    spec:
+      containers:
+      - args:
+        - -Dquarkus.http.host=0.0.0.0
+        - -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+        - -jar
+        - /deployments/quarkus-run.jar
+        command:
+        - java
+        env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: JAVA_APP_JAR
+          value: /deployments/quarkus-run.jar
+        envFrom:
+        - configMapRef:
+            name: store-simulator-cm
+        - secretRef:
+            name: simulator-secrets
+        image: quay.io/ibmcase/eda-store-simulator
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /q/health/live
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: store-simulator
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /q/health/ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+      serviceAccount: store-simulator
+
+     

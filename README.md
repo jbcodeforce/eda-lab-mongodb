@@ -129,10 +129,69 @@ You need the following:
 * [git](https://git-scm.com/)
 * [jq](https://stedolan.github.io/jq/)
 * [OpenShift oc CLI](https://docs.openshift.com/container-platform/4.5/cli_reference/openshift_cli/getting-started-cli.html)
+* Create an Event Streams managed service instance on IBM Cloud, create the credentials with `manager` role. Get the bootstrap server URLs, and the API_KEY.
+
+### OpenShift specific setup
+
+* Connect to your OpenShift cluster using ‘oc’ cli
+* Create a new project `oc new-project mongo-lab2`
 
 ### Prepare the MongoDB Sink Connector
 
-The Confluent verified connector is coming from the [Mongodb team](https://docs.mongodb.com/kafka-connector/current/).
+The Confluent verified connector is coming from the [Mongodb team](https://docs.mongodb.com/kafka-connector/current/), and the deployment guide should gives you all the instruction to deploy.
+
+This repository include a Kustomization yaml files to deploy to an OpenShift Cluster.
+
+### Deploy Strimzi Kafka Connect
+
+### Configure MongoDB sink connector
+
+### Deploy simulator application
+
+The simulator application is sending messages to Event Streams on cloud. So get the `bootstrap server` URLs.
+
+* Define the secrets for the application with the Event Streams information and credentials
+
+```sh
+export KAFKA_BOOTSTRAP_SERVERS=broker-0-l.cloud.ibm.com:9093,broker-4-l....eventstreams.cloud.ibm.com:9093
+export KAFKA_PASSWORD=lq3....9
+export KAFKA_USER=token
+oc create secret generic simulator-secrets --from-literal=KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+--from-literal=KAFKA_SECURITY_PROTOCOL=SASL_SSL \
+--from-literal=KAFKA_SASL_MECHANISM=PLAIN\
+--from-literal=KAFKA_SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=$KAFKA_USER password=$KAFKA_PASSWORD;"
+```
+
+* Deploy the application
+
+  ```sh
+  oc apply -k kustomize/apps/store-simulator
+  ```
+
+* Verify pods are running and get the routes:
+
+```sh
+oc get pods
+oc get route store-simulator -o jsonpath="{.spec.host}"
+```
+* Open a web browser on this URL, and in the Simulator tab select Kafka and send some messages:
+
+   ![](./docs/simulator.png)
+
+* Use Kafdrop to verify messages are in Event Streams `items` topic
+
+  ```sh
+  ./scripts/kafdrop/startKafdrop.sh
+  ```
+  
+  [http://localhost:9000/topic/items/messages?partition=0&offset=0&count=100](http://localhost:9000/topic/items/messages?partition=0&offset=0&count=100)
+
+   ![](./docs/kafdrop.png)
+  
+
+### Verify in MongoDB the items collection
+
+## Lab 3: Confluent Kafka on OpenShift
 
 ## Related information
 
