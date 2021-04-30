@@ -1,1 +1,1 @@
-docker stop $(docker stop kafdrop)
+docker rm $(docker stop kafdrop)
